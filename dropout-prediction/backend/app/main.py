@@ -8,7 +8,7 @@ from .models.ml_model import predictor
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Starting up...")
-    predictor.load_model()
+    predictor.load_models()
     yield
     print("Shutting down...")
 

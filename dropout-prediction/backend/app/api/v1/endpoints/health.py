@@ -10,3 +10,7 @@ async def health():
         status="healthy" if predictor.model_loaded else "unhealthy",
         model_loaded=predictor.model_loaded
     )
+
+@router.options("/health")
+async def health_options():
+    return {"message": "OK"}

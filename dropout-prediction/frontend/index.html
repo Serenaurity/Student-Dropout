@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบทำนายการออกกลางคันของนักศึกษา</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-section h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #4facfe;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .gpa-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .year-section {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .year-section h3 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .term-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .term-input {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .term-input label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .term-input input {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .results-section h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #4facfe;
+            padding-bottom: 10px;
+        }
+
+        .risk-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .risk-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .risk-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .risk-fill.low { background: linear-gradient(90deg, #28a745, #20c997); }
+        .risk-fill.medium { background: linear-gradient(90deg, #ffc107, #fd7e14); }
+        .risk-fill.high { background: linear-gradient(90deg, #dc3545, #e83e8c); }
+
+        .risk-percentage {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .risk-level {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .recommendation {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #4facfe;
+            margin-bottom: 20px;
+        }
+
+        .future-prediction {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .future-prediction h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .future-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .future-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+        }
+
+        .future-result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #28a745;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .feature-explanations {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .feature-explanations h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .feature-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .gpa-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .term-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ระบบทำนายการออกกลางคันของนักศึกษา</h1>
+            <p>กรอกข้อมูลพื้นฐานเพื่อวิเคราะห์ความเสี่ยงและรับคำแนะนำ</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>📝 กรอกข้อมูลนักศึกษา</h2>
+                <form id="studentForm">
+                    <div class="form-group">
+                        <label for="faculty">คณะ</label>
+                        <select id="faculty" required>
+                            <option value="">เลือกคณะ</option>
+                            <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+                            <option value="วิศวกรรมศาสตร์">วิศวกรรมศาสตร์</option>
+                            <option value="บริหารธุรกิจ">บริหารธุรกิจ</option>
+                            <option value="ศิลปศาสตร์">ศิลปศาสตร์</option>
+                            <option value="แพทยศาสตร์">แพทยศาสตร์</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">เพศ</label>
+                        <select id="gender" required>
+                            <option value="">เลือกเพศ</option>
+                            <option value="ชาย">ชาย</option>
+                            <option value="หญิง">หญิง</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gpax">GPAX (เกรดเฉลี่ยสะสม)</label>
+                        <input type="number" id="gpax" step="0.01" min="0" max="4" required placeholder="เช่น 2.60">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="count_f">จำนวนรายวิชาที่ติด F</label>
+                        <input type="number" id="count_f" min="0" required placeholder="เช่น 2">
+                    </div>
+
+                    <div class="form-group">
+                        <label>ผลการเรียนรายปี/เทอม (0.00 - 4.00)</label>
+                        <div class="gpa-grid">
+                            <div class="year-section">
+                                <h3>ปี 1</h3>
+                                <div class="term-inputs">
+                                    <div class="term-input">
+                                        <label>เทอม 1</label>
+                                        <input type="number" id="year1_term1" step="0.01" min="0" max="4" placeholder="2.46">
+                                    </div>
+                                    <div class="term-input">
+                                        <label>เทอม 2</label>
+                                        <input type="number" id="year1_term2" step="0.01" min="0" max="4" placeholder="2.20">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="year-section">
+                                <h3>ปี 2</h3>
+                                <div class="term-inputs">
+                                    <div class="term-input">
+                                        <label>เทอม 1</label>
+                                        <input type="number" id="year2_term1" step="0.01" min="0" max="4" placeholder="2.32">
+                                    </div>
+                                    <div class="term-input">
+                                        <label>เทอม 2</label>
+                                        <input type="number" id="year2_term2" step="0.01" min="0" max="4" placeholder="3.20">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="year-section">
+                                <h3>ปี 3</h3>
+                                <div class="term-inputs">
+                                    <div class="term-input">
+                                        <label>เทอม 1</label>
+                                        <input type="number" id="year3_term1" step="0.01" min="0" max="4" placeholder="2.80">
+                                    </div>
+                                    <div class="term-input">
+                                        <label>เทอม 2</label>
+                                        <input type="number" id="year3_term2" step="0.01" min="0" max="4">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="year-section">
+                                <h3>ปี 4</h3>
+                                <div class="term-inputs">
+                                    <div class="term-input">
+                                        <label>เทอม 1</label>
+                                        <input type="number" id="year4_term1" step="0.01" min="0" max="4">
+                                    </div>
+                                    <div class="term-input">
+                                        <label>เทอม 2</label>
+                                        <input type="number" id="year4_term2" step="0.01" min="0" max="4">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="year-section">
+                                <h3>ปี 5</h3>
+                                <div class="term-inputs">
+                                    <div class="term-input">
+                                        <label>เทอม 1</label>
+                                        <input type="number" id="year5_term1" step="0.01" min="0" max="4">
+                                    </div>
+                                    <div class="term-input">
+                                        <label>เทอม 2</label>
+                                        <input type="number" id="year5_term2" step="0.01" min="0" max="4">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn" id="analyzeBtn">
+                        🔍 วิเคราะห์ความเสี่ยง
+                    </button>
+                </form>
+            </div>
+
+            <div class="results-section">
+                <h2>📊 ผลการประเมินความเสี่ยง</h2>
+                <div id="results">
+                    <div style="text-align: center; color: #6c757d; padding: 40px;">
+                        กรุณากรอกข้อมูลและกดปุ่ม "วิเคราะห์ความเสี่ยง"
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8001/api/v1';
+        
+        // ตรวจสอบการเชื่อมต่อ API
+        async function checkAPIConnection() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    console.log('API connection OK');
+                    return true;
+                } else {
+                    console.error('API health check failed:', response.status);
+                    return false;
+                }
+            } catch (error) {
+                console.error('API connection error:', error);
+                return false;
+            }
+        }
+        
+        // ตรวจสอบการเชื่อมต่อเมื่อโหลดหน้า
+        window.addEventListener('load', async () => {
+            const isConnected = await checkAPIConnection();
+            if (!isConnected) {
+                document.getElementById('results').innerHTML = `
+                    <div class="error">
+                        <strong>⚠️ ไม่สามารถเชื่อมต่อกับ API ได้</strong><br>
+                        กรุณาตรวจสอบว่า Backend ทำงานอยู่ที่ http://localhost:8001<br>
+                        <button class="btn" onclick="location.reload()" style="margin-top: 10px;">
+                            🔄 ลองใหม่
+                        </button>
+                    </div>
+                `;
+            }
+        });
+        
+        document.getElementById('studentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const resultsDiv = document.getElementById('results');
+            
+            // ตรวจสอบข้อมูลที่จำเป็น
+            const faculty = document.getElementById('faculty').value;
+            const gender = document.getElementById('gender').value;
+            const gpax = document.getElementById('gpax').value;
+            const count_f = document.getElementById('count_f').value;
+            
+            if (!faculty || !gender || !gpax || !count_f) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        <strong>⚠️ กรุณากรอกข้อมูลที่จำเป็น:</strong><br>
+                        - คณะ<br>
+                        - เพศ<br>
+                        - GPAX<br>
+                        - จำนวนวิชาที่ได้ F
+                    </div>
+                `;
+                return;
+            }
+            
+            // แสดง loading
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'กำลังวิเคราะห์...';
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>กำลังวิเคราะห์ข้อมูล...</p>
+                </div>
+            `;
+            
+            try {
+                // รวบรวมข้อมูลจากฟอร์ม
+                const formData = {
+                    faculty: faculty,
+                    gender: gender,
+                    gpax: parseFloat(gpax),
+                    count_f: parseInt(count_f),
+                    year1_term1: getValueOrNull('year1_term1'),
+                    year1_term2: getValueOrNull('year1_term2'),
+                    year2_term1: getValueOrNull('year2_term1'),
+                    year2_term2: getValueOrNull('year2_term2'),
+                    year3_term1: getValueOrNull('year3_term1'),
+                    year3_term2: getValueOrNull('year3_term2'),
+                    year4_term1: getValueOrNull('year4_term1'),
+                    year4_term2: getValueOrNull('year4_term2'),
+                    year5_term1: getValueOrNull('year5_term1'),
+                    year5_term2: getValueOrNull('year5_term2')
+                };
+                
+                console.log('Sending data:', formData);
+                
+                // เรียก API
+                const response = await fetch(`${API_BASE}/predict-from-basic`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API Error:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                console.log('Result:', result);
+                displayResults(result);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        <strong>❌ เกิดข้อผิดพลาด:</strong><br>
+                        ${error.message}<br><br>
+                        <strong>วิธีแก้ไข:</strong><br>
+                        1. ตรวจสอบว่า Backend ทำงานอยู่ที่ http://localhost:8001<br>
+                        2. เปิด Developer Tools (F12) เพื่อดูรายละเอียด error<br>
+                        3. ลองรีเฟรชหน้าเว็บ<br>
+                        <button class="btn" onclick="location.reload()" style="margin-top: 10px;">
+                            🔄 ลองใหม่
+                        </button>
+                    </div>
+                `;
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = '🔍 วิเคราะห์ความเสี่ยง';
+            }
+        });
+        
+        function getValueOrNull(id) {
+            const value = document.getElementById(id).value;
+            return value ? parseFloat(value) : null;
+        }
+        
+        function displayResults(result) {
+            const riskColor = result.risk_color;
+            const riskClass = result.risk_level.toLowerCase();
+            
+            let riskText = '';
+            if (result.risk_level === 'Low') riskText = 'ต่ำ';
+            else if (result.risk_level === 'Medium') riskText = 'ปานกลาง';
+            else if (result.risk_level === 'High') riskText = 'สูง';
+            
+            let resultsHTML = `
+                <div class="risk-display">
+                    <div class="risk-bar">
+                        <div class="risk-fill ${riskClass}" style="width: ${result.dropout_probability * 100}%"></div>
+                    </div>
+                    <div class="risk-percentage" style="color: ${riskColor}">
+                        ${result.dropout_percentage}
+                    </div>
+                    <div class="risk-level" style="color: ${riskColor}">
+                        ระดับความเสี่ยง: ${riskText}
+                    </div>
+                </div>
+                
+                <div class="recommendation">
+                    <h3>💡 คำแนะนำ</h3>
+                    <p>${result.recommendation}</p>
+                </div>
+            `;
+            
+            // แสดง feature explanations ถ้ามี
+            if (result.feature_explanations) {
+                resultsHTML += `
+                    <div class="feature-explanations">
+                        <h3>📋 สรุปข้อมูลสำคัญ</h3>
+                        ${Object.entries(result.feature_explanations).map(([key, value]) => 
+                            `<div class="feature-item">
+                                <span><strong>${key}:</strong></span>
+                                <span>${value}</span>
+                            </div>`
+                        ).join('')}
+                    </div>
+                `;
+            }
+            
+            // เพิ่มส่วนทำนายอนาคต
+            resultsHTML += `
+                <div class="future-prediction">
+                    <h3>🔮 คาดการณ์ผลการเรียนในอนาคต</h3>
+                    <p>กรอกเกรดเฉลี่ยที่คาดว่าจะทำได้ในเทอมหน้า</p>
+                    <div class="future-input-group">
+                        <input type="number" id="futureGpa" step="0.01" min="0" max="4" placeholder="4.00" value="4.00">
+                        <button class="btn" onclick="predictFuture()" style="width: auto; margin: 0;">
+                            คำนวณใหม่
+                        </button>
+                    </div>
+                    <div id="futureResult"></div>
+                </div>
+            `;
+            
+            document.getElementById('results').innerHTML = resultsHTML;
+        }
+        
+        async function predictFuture() {
+            const futureGpa = parseFloat(document.getElementById('futureGpa').value);
+            const futureResultDiv = document.getElementById('futureResult');
+            
+            if (!futureGpa || futureGpa < 0 || futureGpa > 4) {
+                futureResultDiv.innerHTML = '<div class="error">กรุณากรอกเกรดที่ถูกต้อง (0.00 - 4.00)</div>';
+                return;
+            }
+            
+            futureResultDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>กำลังคำนวณ...</p>
+                </div>
+            `;
+            
+            try {
+                // รวบรวมข้อมูลทั้งหมดรวม future_gpa
+                const futureData = {
+                    faculty: document.getElementById('faculty').value,
+                    gender: document.getElementById('gender').value,
+                    gpax: parseFloat(document.getElementById('gpax').value),
+                    count_f: parseInt(document.getElementById('count_f').value),
+                    year1_term1: getValueOrNull('year1_term1'),
+                    year1_term2: getValueOrNull('year1_term2'),
+                    year2_term1: getValueOrNull('year2_term1'),
+                    year2_term2: getValueOrNull('year2_term2'),
+                    year3_term1: getValueOrNull('year3_term1'),
+                    year3_term2: getValueOrNull('year3_term2'),
+                    year4_term1: getValueOrNull('year4_term1'),
+                    year4_term2: getValueOrNull('year4_term2'),
+                    year5_term1: getValueOrNull('year5_term1'),
+                    year5_term2: getValueOrNull('year5_term2'),
+                    future_gpa: futureGpa
+                };
+                
+                console.log('Sending future prediction data:', futureData);
+                
+                const response = await fetch(`${API_BASE}/predict-future`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(futureData)
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API Error:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                console.log('Future prediction result:', result);
+                
+                let improvementText = '';
+                if (result.improvement > 0) {
+                    improvementText = `ลดลง ${result.improvement_percentage}`;
+                } else if (result.improvement < 0) {
+                    improvementText = `เพิ่มขึ้น ${Math.abs(result.improvement) * 100:.1f}%`;
+                } else {
+                    improvementText = 'ไม่เปลี่ยนแปลง';
+                }
+                
+                futureResultDiv.innerHTML = `
+                    <div class="future-result">
+                        <h4>📈 ผลการคาดการณ์</h4>
+                        <p><strong>ความเสี่ยงปัจจุบัน:</strong> ${result.current_percentage}</p>
+                        <p><strong>ความเสี่ยงในอนาคต:</strong> ${result.future_percentage}</p>
+                        <p><strong>การเปลี่ยนแปลง:</strong> ${improvementText}</p>
+                        <p><strong>คำแนะนำ:</strong> ${result.recommendation}</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                futureResultDiv.innerHTML = `
+                    <div class="error">
+                        <strong>เกิดข้อผิดพลาด:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

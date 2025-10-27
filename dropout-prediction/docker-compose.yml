@@ -3,11 +3,21 @@
     build: ./backend
     container_name: dropout-api
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
-      - ./backend/ml_models:/app/ml_models  # ← ตรงนี้สำคัญ!
       - ./backend/logs:/app/logs
+      - ./XG:/app/XG
     environment:
       - DEBUG=True
-      - MODEL_PATH=/app/ml_models/xgboost_dropout_tuned_model.json
     restart: unless-stopped
+
+  frontend:
+    image: nginx:alpine
+    container_name: dropout-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    restart: unless-stopped
+    depends_on:
+      - backend
