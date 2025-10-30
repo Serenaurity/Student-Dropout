@@ -81,3 +81,5 @@ class FuturePredictionOutput(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     model_loaded: bool
+    loaded_terms: Dict[str, bool]
+    loaded_count: int

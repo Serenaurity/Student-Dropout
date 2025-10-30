@@ -21,3 +21,14 @@
     restart: unless-stopped
     depends_on:
       - backend
+
+  teacher_portal:
+    image: nginx:alpine
+    container_name: dropout-teacher-portal
+    ports:
+      - "4000:80"
+    volumes:
+      - ./teacher-portal:/usr/share/nginx/html
+    restart: unless-stopped
+    depends_on:
+      - backend

@@ -34,8 +34,8 @@ class DropoutPredictor:
         for term, model_path in self.model_paths.items():
             for attempt in range(max_retries):
                 try:
-                    # สร้าง absolute path
-                    abs_path = Path(__file__).parent.parent.parent.parent / model_path
+                    # สร้าง absolute path (ไปที่โฟลเดอร์ /app)
+                    abs_path = Path(__file__).parent.parent.parent / model_path
                     print(f"🔄 Loading {term} model - Attempt {attempt + 1}/{max_retries}")
                     print(f"🔍 Looking for model at: {abs_path}")
                     print(f"✅ File exists: {abs_path.exists()}")
@@ -69,12 +69,15 @@ class DropoutPredictor:
             return False
     
     def get_model_for_term(self, num_terms: int) -> str:
-        """เลือก model ตามจำนวนเทอมที่เรียนแล้ว"""
+        """เลือก model ตามจำนวนเทอมที่เรียนแล้ว
+        ใช้ term1 สำหรับ 1 เทอม, term2 สำหรับ 2 เทอม, term3 ตั้งแต่ 3 ขึ้นไป (เช่น 3,4,5,...,10)
+        """
         if num_terms == 1:
             return 'term1'
         elif num_terms == 2:
             return 'term2'
-        else:  # 3 เทอมขึ้นไป
+        else:
+            # ตั้งแต่เทอม 3 ขึ้นไป (เทอม 4 ขึ้นไปก็คือ term3)
             return 'term3'
     
     def predict(self, data: Dict, num_terms: int = None) -> Tuple[int, float]:

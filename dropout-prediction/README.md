@@ -24,23 +24,29 @@
 - **What-if Analysis**: ทดลองดูว่าหากเกรดเทอมถัดไปดีขึ้น ความเสี่ยงจะลดลงเท่าไหร่
 - **Interactive Prediction**: ปรับเกรดที่คาดหวังและดูผลลัพธ์ทันที
 
-## โครงสร้างโปรเจค
+## โครงสร้างโปรเจค (อัปเดตหลังทำความสะอาดไฟล์)
 
 ```
 dropout-prediction/
 ├── backend/
 │   ├── app/
+│   │   ├── api/
+│   │   │   └── v1/endpoints/           # batch, prediction, health
 │   │   ├── models/
-│   │   │   ├── ml_model.py          # XGBoost Model
-│   │   │   └── schemas.py           # Data Models
-│   │   ├── utils/
-│   │   │   └── feature_engineering.py  # Feature Creation
-│   │   └── api/v1/endpoints/
-│   │       └── prediction.py        # API Endpoints
-│   └── ml_models/
-│       └── xgboost_dropout_tuned_model.json
+│   │   │   ├── ml_model.py             # โหลด/ใช้โมเดล XGBoost
+│   │   │   └── schemas.py              # Pydantic Schemas
+│   │   ├── utils/feature_engineering.py
+│   │   └── main.py
+│   ├── requirements.txt
+│   └── Dockerfile
+├── teacher-portal/
+│   └── index.html                      # อินเตอร์เฟซอาจารย์ (อัปโหลดไฟล์แบบกลุ่ม)
 ├── frontend/
-│   └── index.html                   # Web Interface
+│   └── index.html                      # เดโม/หน้าเดี่ยว (ถ้ายังใช้งาน)
+├── XG/
+│   ├── model_term1.json
+│   ├── model_term2.json
+│   └── model_term3.json                # ตำแหน่งที่ backend อ้างอิงจริง
 └── docker-compose.yml
 ```
 
@@ -48,27 +54,25 @@ dropout-prediction/
 
 ### 1. ใช้ Docker (แนะนำ)
 ```bash
-# ดับเบิลคลิกไฟล์
-restart-xgboost.bat
+# ที่รูทโปรเจค
+docker compose -f dropout-prediction/docker-compose.yml up -d --build
 ```
 
 ### 2. เข้าถึงระบบ
-- **Frontend**: http://localhost:3000
+- **Teacher Portal**: เปิดไฟล์ `teacher-portal/index.html` หรือผ่านเว็บเซิร์ฟเวอร์ที่คุณใช้งาน
 - **Backend API**: http://localhost:8001
 - **API Docs**: http://localhost:8001/docs
 
-### 3. การใช้งาน
-1. เปิดเว็บเบราว์เซอร์ไปที่ http://localhost:3000
-2. กรอกข้อมูลพื้นฐานของนักศึกษา
-3. กดปุ่ม "วิเคราะห์ความเสี่ยง"
-4. ดูผลการประเมินและคำแนะนำ
-5. ทดลองกรอกเกรดที่คาดหวังในเทอมถัดไป
-6. กดปุ่ม "คำนวณใหม่" เพื่อดูการเปลี่ยนแปลง
+### 3. การใช้งาน (Teacher Portal - แบบกลุ่ม)
+1. เปิด `teacher-portal/index.html`
+2. ดาวน์โหลดเทมเพลต CSV มุมขวาบน (ถ้าต้องการ)
+3. อัปโหลดไฟล์ CSV/XLSX แล้วกด "วิเคราะห์"
+4. สามารถเรียงข้อมูลตาม "ความเสี่ยง" หรือ "รหัสนักศึกษา" ได้โดยคลิกที่หัวคอลัมน์
 
 ## API Endpoints
 
 ### 1. `/api/v1/predict-from-basic` (POST)
-ทำนายจากข้อมูลพื้นฐาน
+ทำนายรายบุคคลจากข้อมูลพื้นฐาน
 ```json
 {
   "faculty": "วิทยาศาสตร์และเทคโนโลยี",
@@ -84,7 +88,9 @@ restart-xgboost.bat
 ```
 
 ### 2. `/api/v1/predict-future` (POST)
-ทำนายอนาคต
+ทำนายอนาคตรายบุคคล
+### 3. `/api/v1/batch-predict` (POST, multipart/form-data)
+อัปโหลดไฟล์ `file` เป็น CSV/XLSX เพื่อทำนายแบบกลุ่ม ผลลัพธ์จะรวม `student_id`, `name` ถ้ามีในไฟล์อินพุต
 ```json
 {
   "faculty": "วิทยาศาสตร์และเทคโนโลยี",

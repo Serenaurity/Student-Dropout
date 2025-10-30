@@ -5,322 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบทำนายการออกกลางคันของนักศึกษา</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 300;
-        }
-
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            padding: 30px;
-        }
-
-        .form-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            border: 2px solid #e9ecef;
-        }
-
-        .form-section h2 {
-            color: #495057;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 3px solid #4facfe;
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
-        }
-
-        .gpa-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .year-section {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-        }
-
-        .year-section h3 {
-            color: #495057;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        .term-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .term-input {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .term-input label {
-            font-size: 0.9em;
-            margin-bottom: 5px;
-        }
-
-        .term-input input {
-            padding: 8px;
-            font-size: 14px;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .results-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            border: 2px solid #e9ecef;
-        }
-
-        .results-section h2 {
-            color: #495057;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 3px solid #4facfe;
-            padding-bottom: 10px;
-        }
-
-        .risk-display {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .risk-bar {
-            width: 100%;
-            height: 20px;
-            background: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-
-        .risk-fill {
-            height: 100%;
-            transition: width 0.5s ease;
-            border-radius: 10px;
-        }
-
-        .risk-fill.low { background: linear-gradient(90deg, #28a745, #20c997); }
-        .risk-fill.medium { background: linear-gradient(90deg, #ffc107, #fd7e14); }
-        .risk-fill.high { background: linear-gradient(90deg, #dc3545, #e83e8c); }
-
-        .risk-percentage {
-            font-size: 2em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .risk-level {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-
-        .recommendation {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid #4facfe;
-            margin-bottom: 20px;
-        }
-
-        .future-prediction {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-        }
-
-        .future-prediction h3 {
-            color: #495057;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .future-input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .future-input-group input {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-        }
-
-        .future-result {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border-left: 4px solid #28a745;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #6c757d;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #4facfe;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #f5c6cb;
-        }
-
-        .feature-explanations {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .feature-explanations h3 {
-            color: #495057;
-            margin-bottom: 15px;
-        }
-
-        .feature-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .feature-item:last-child {
-            border-bottom: none;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 20px;
-            }
-            
-            .gpa-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .term-inputs {
-                grid-template-columns: 1fr;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #f6f8fa; color: #222; }
+        .container { max-width: 960px; margin: 0 auto; padding: 24px; }
+        .header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 20px 24px; border-radius: 8px; }
+        .header h1 { font-size: 22px; font-weight: 600; }
+        .header p { color: #6b7280; margin-top: 6px; }
+        .main-content { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px; }
+        @media (min-width: 980px){ .main-content { grid-template-columns: 1fr 1fr; } }
+        .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
+        .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 14px; color: #374151; margin-bottom: 6px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+        .gpa-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        @media (min-width: 640px){ .gpa-grid { grid-template-columns: 1fr 1fr; } }
+        .year-section { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; }
+        .year-section h3 { font-size: 14px; color: #374151; margin-bottom: 8px; }
+        .term-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .term-input label { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+        .term-input input { padding: 8px 10px; font-size: 14px; border: 1px solid #d1d5db; border-radius: 6px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #2563eb; color: #fff; border: 0; padding: 10px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 8px; }
+        .btn:disabled { opacity: .6; cursor: not-allowed; }
+        .results-section .risk-bar { width: 100%; height: 10px; background: #e5e7eb; border-radius: 6px; overflow: hidden; margin: 10px 0; }
+        .risk-fill { height: 100%; border-radius: 6px; transition: width .3s ease; }
+        .risk-fill.low { background: #22c55e; }
+        .risk-fill.medium { background: #f59e0b; }
+        .risk-fill.high { background: #ef4444; }
+        .risk-percentage { font-size: 20px; font-weight: 700; margin: 8px 0; }
+        .risk-level { font-size: 14px; margin-bottom: 12px; }
+        .recommendation { background: #fafafa; border: 1px solid #e5e7eb; border-left: 3px solid #2563eb; padding: 12px; border-radius: 6px; margin-bottom: 12px; }
+        .future-prediction { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; }
+        .future-input-group { display: flex; gap: 8px; margin-bottom: 8px; }
+        .future-input-group input { flex: 1; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; }
+        .future-result { background: #f8fafc; border-left: 3px solid #22c55e; padding: 10px; border-radius: 6px; margin-top: 8px; }
+        .loading { text-align: center; padding: 16px; color: #6b7280; }
+        .spinner { border: 3px solid #f3f4f6; border-top: 3px solid #2563eb; border-radius: 50%; width: 28px; height: 28px; animation: spin 1s linear infinite; margin: 0 auto 8px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .error { background: #fef2f2; color: #991b1b; padding: 12px; border-radius: 6px; margin: 10px 0; border: 1px solid #fecaca; }
+        .feature-explanations { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; margin-top: 12px; }
+        .feature-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+        .feature-item:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -720,7 +446,8 @@
                 if (result.improvement > 0) {
                     improvementText = `ลดลง ${result.improvement_percentage}`;
                 } else if (result.improvement < 0) {
-                    improvementText = `เพิ่มขึ้น ${Math.abs(result.improvement) * 100:.1f}%`;
+                    const inc = Math.abs(result.improvement) * 100;
+                    improvementText = `เพิ่มขึ้น ${inc.toFixed(1)}%`;
                 } else {
                     improvementText = 'ไม่เปลี่ยนแปลง';
                 }

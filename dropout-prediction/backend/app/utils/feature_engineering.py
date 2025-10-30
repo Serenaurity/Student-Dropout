@@ -89,9 +89,12 @@ class FeatureEngineer:
         # Early warning (GPA ต่ำ + มี F)
         early_warning = 1 if (gpax < 2.5 and count_f > 0) else 0
         
+        # ส่งคืนทั้งรูปแบบชื่อที่โมเดลต้องการและแบบ lowercase ที่ UI ใช้
         return {
-            'has_f': has_f,
-            'multiple_f': multiple_f,
+            'has_F': float(has_f),          # ชื่อตามโมเดล
+            'multiple_F': float(multiple_f),# ชื่อตามโมเดล
+            'has_f': has_f,                 # สำหรับคำอธิบาย UI
+            'multiple_f': multiple_f,       # สำหรับคำอธิบาย UI
             'low_gpa': low_gpa,
             'very_low_gpa': very_low_gpa,
             'declining_trend': declining_trend,
