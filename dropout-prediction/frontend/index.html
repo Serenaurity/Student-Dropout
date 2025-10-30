@@ -47,6 +47,14 @@
         .feature-explanations { background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; margin-top: 12px; }
         .feature-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
         .feature-item:last-child { border-bottom: none; }
+        .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
+        @media (min-width: 640px){ .summary-grid { grid-template-columns: repeat(3, 1fr); } }
+        .summary-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f8fafc; }
+        .summary-emoji { font-size: 20px; width: 24px; text-align: center; }
+        .pill { padding: 2px 10px; border-radius: 999px; font-weight: 700; font-size: 12px; display: inline-block; }
+        .pill-green { background: #e8f7ee; color: #166534; border: 1px solid #bbf7d0; }
+        .pill-orange { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+        .pill-red { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
     </style>
 </head>
 <body>
@@ -352,17 +360,108 @@
                 </div>
             `;
             
-            // แสดง feature explanations ถ้ามี
-            if (result.feature_explanations) {
+            // แสดง feature explanations ถ้ามี (จัดรูปแบบอ่านง่ายขึ้น โดยเน้นรายการสำคัญ)
+            if (result.feature_explanations && Object.keys(result.feature_explanations).length > 0) {
+                const kv = result.feature_explanations;
+                const entries = Object.entries(kv);
+                const text = (k) => (kv[k] ?? '').toString();
+
+                // heuristic จัดหมวดสำคัญ
+                const countFKey = entries.find(([k]) => k.toLowerCase().includes('count_f') || k.toLowerCase().includes('จำนวนวิชาที่ได้ f'))?.[0];
+                const hasFKey = entries.find(([k]) => /(^|\b)has[_\s-]*f\b/i.test(k) || k.toLowerCase().includes('ประวัติได้เกรด f'))?.[0];
+                const warnKey = entries.find(([k]) => k.toLowerCase().includes('warning') || k.toLowerCase().includes('สัญญาณเตือน'))?.[0];
+
+                const importantCards = [];
+                if (countFKey) {
+                    const valTxt = text(countFKey).match(/\d+/)?.[0] ?? text(countFKey);
+                    importantCards.push(`
+                        <div class="summary-card">
+                            <div class="summary-emoji">🅵</div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700;">จำนวนวิชาที่ได้ F</div>
+                                <div class="pill pill-red">${valTxt} รายวิชา</div>
+                            </div>
+                        </div>
+                    `);
+                }
+                if (hasFKey) {
+                    const val = text(hasFKey);
+                    const isYes = /มี|yes|true|1/i.test(val);
+                    importantCards.push(`
+                        <div class="summary-card">
+                            <div class="summary-emoji">📘</div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700;">ประวัติได้เกรด F</div>
+                                <div class="pill ${isYes ? 'pill-red' : 'pill-green'}">${isYes ? 'มีประวัติ' : 'ไม่มีประวัติ'}</div>
+                            </div>
+                        </div>
+                    `);
+                }
+                if (warnKey) {
+                    importantCards.push(`
+                        <div class="summary-card">
+                            <div class="summary-emoji">⚠️</div>
+                            <div style="flex:1;">
+                                <div style="font-weight:700;">สัญญาณเตือน</div>
+                                <div class="pill pill-orange">${text(warnKey)}</div>
+                            </div>
+                        </div>
+                    `);
+                }
+
+                const otherRows = entries
+                    .filter(([k]) => k !== countFKey && k !== hasFKey && k !== warnKey)
+                    .map(([key, value]) => `
+                        <div class="feature-item">
+                            <span><strong>${key}:</strong></span>
+                            <span>${value}</span>
+                        </div>
+                    `).join('');
+
                 resultsHTML += `
                     <div class="feature-explanations">
                         <h3>📋 สรุปข้อมูลสำคัญ</h3>
-                        ${Object.entries(result.feature_explanations).map(([key, value]) => 
-                            `<div class="feature-item">
-                                <span><strong>${key}:</strong></span>
-                                <span>${value}</span>
-                            </div>`
-                        ).join('')}
+                        ${importantCards.length ? `<div class="summary-grid">${importantCards.join('')}</div>` : ''}
+                        ${otherRows}
+                    </div>
+                `;
+            } else {
+                // Fallback: แสดงข้อมูลพื้นฐานจากฟอร์มให้พอเห็นภาพรวม
+                const gpaxVal = document.getElementById('gpax').value || '-';
+                const countFVal = document.getElementById('count_f').value || '0';
+                const termVals = [
+                    'year1_term1','year1_term2','year2_term1','year2_term2',
+                    'year3_term1','year3_term2','year4_term1','year4_term2','year5_term1','year5_term2'
+                ].map(id => document.getElementById(id).value).filter(v => v !== '');
+                const termsCount = termVals.length;
+
+                resultsHTML += `
+                    <div class="feature-explanations">
+                        <h3>📋 สรุปข้อมูลสำคัญ</h3>
+                        <div class="summary-grid">
+                            <div class="summary-card">
+                                <div class="summary-emoji">🎯</div>
+                                <div style="flex:1;">
+                                    <div style="font-weight:700;">GPAX</div>
+                                    <div class="pill ${gpaxVal !== '-' && parseFloat(gpaxVal) < 2.0 ? 'pill-red' : 'pill-green'}">${gpaxVal}</div>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-emoji">🅵</div>
+                                <div style="flex:1;">
+                                    <div style="font-weight:700;">จำนวนวิชาที่ได้ F</div>
+                                    <div class="pill ${parseInt(countFVal||'0',10) > 0 ? 'pill-red' : 'pill-green'}">${countFVal} รายวิชา</div>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-emoji">📚</div>
+                                <div style="flex:1;">
+                                    <div style="font-weight:700;">จำนวนเทอมที่มีข้อมูล</div>
+                                    <div class="pill pill-orange">${termsCount} เทอม</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feature-item"><span><strong>หมายเหตุ:</strong></span><span>ยังไม่พบปัจจัยเสี่ยงเฉพาะเจาะจง</span></div>
                     </div>
                 `;
             }
